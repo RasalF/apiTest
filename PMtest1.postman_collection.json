@@ -1,0 +1,697 @@
+{
+	"info": {
+		"_postman_id": "a997eb66-f899-4eae-872a-1e2f1c24fe8a",
+		"name": "PMtest1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26809069"
+	},
+	"item": [
+		{
+			"name": "Create",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var firstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
+							"pm.environment.set(\"fName\", firstName.replace(/[^a-zA-Z0-9 ]/g, ''));\r",
+							"\r",
+							"var lastName = pm.variables.replaceIn('{{$randomLastName}}')\r",
+							"pm.environment.set(\"lName\", lastName.replace(/[^a-zA-Z0-9 ]/g, ''));\r",
+							"\r",
+							"var emailDomain = \"@taltektc.com\"\r",
+							"var randomNum = Math.floor(Math.random() * 90000) + 10000;\r",
+							"var randomEmail = firstName.toLowerCase()+\".\"+lastName.toLowerCase()+randomNum+emailDomain;\r",
+							"pm.environment.set(\"email\", randomEmail);\r",
+							"\r",
+							" console.log(randomEmail)\r",
+							"\r",
+							"// Function to generate a random year between 1935 and 2013\r",
+							"function getRandomYear() {\r",
+							"    const minYear = 1935;\r",
+							"    const maxYear = 2013;\r",
+							"    return Math.floor(Math.random() * (maxYear - minYear + 1)) + minYear;\r",
+							"}\r",
+							"\r",
+							"// Function to generate a random month (1 to 12)\r",
+							"function getRandomMonth() {\r",
+							"    return Math.floor(Math.random() * 12) + 01;\r",
+							"}\r",
+							"// random day\r",
+							"const getRandomDay = Math.floor(Math.random() * 7);\r",
+							"\r",
+							"// Set the random year and month to Postman environment or global variables\r",
+							"pm.environment.set('randomYear', getRandomYear());\r",
+							"pm.environment.set('randomMonth', getRandomMonth());\r",
+							"pm.environment.set('randomDay', getRandomDay);\r",
+							"\r",
+							"// Generate a random number between 0 and 1\r",
+							"function getRandomInt(max) {\r",
+							"  return Math.floor(Math.random() * Math.floor(max));\r",
+							"}\r",
+							"\r",
+							"// Generate a random gender\r",
+							"const genders = ['male', 'female'];\r",
+							"const randomGender = genders[getRandomInt(2)];\r",
+							"\r",
+							"// Set the \"gender\" variable to the random gender\r",
+							"pm.environment.set('gender', randomGender);\r",
+							"\r",
+							"// Set the agreement variable to true\r",
+							"pm.environment.set(\"agreement\", true);\r",
+							"\r",
+							"// Log a message indicating that the agreement is set to true\r",
+							"console.log(\"Agreement set to true: \" + pm.environment.get(\"agreement\"));\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Response status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response has required fields - success, message, and id\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.success).to.exist;\r",
+							"    pm.expect(responseData.message).to.exist;\r",
+							"    pm.expect(responseData.id).to.exist;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"The success field should be a boolean\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData.success).to.be.a('boolean');\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Message field is a non-empty string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData.message).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"The id field is a non-empty string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData.id).to.exist.and.to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");\r",
+							"\r",
+							"    pm.environment.set(\"ID\",responseData.id );\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\" : \"{{fName}}\",\r\n    \"lastName\" : \"{{lName}}\",\r\n    \"email\"     : \"{{email}}\",\r\n    \"password\"  : \"123456\",\r\n    \"confirmPassword\"  : \"123456\",\r\n    \"dob\"       : {\r\n        \"year\"      : {{randomYear}},\r\n        \"month\"     : {{randomMonth}},\r\n        \"day\"       : {{randomDay}}\r\n    },\r\n    \"gender\"    : \"{{gender}}\",\r\n    \"agree\"     : {{agreement}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/signup",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"First name is a non-empty string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData.data.firstName).to.be.a('string').and.to.have.lengthOf.at.least(1);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"lastName is a non-empty string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.data.lastName).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"studentId is a non-empty string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.data.studentId).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/student/{{ID}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"student",
+						"{{ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LogIn",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Success field is true\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    pm.expect(responseData.success).to.be.true;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Token field is not empty\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData.token).to.exist.and.to.not.be.empty;\r",
+							"\r",
+							"    pm.environment.set(\"Token\",responseData.token );\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" :\"{{email}}\",\r\n    \"password\" : \"123456\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/login",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var firstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
+							"pm.environment.set(\"fName_update\", firstName.replace(/[^a-zA-Z0-9 ]/g, ''));\r",
+							"\r",
+							"var lastName = pm.variables.replaceIn('{{$randomLastName}}')\r",
+							"pm.environment.set(\"lName_update\", lastName.replace(/[^a-zA-Z0-9 ]/g, ''));\r",
+							"\r",
+							"var emailDomain = \"@taltektc.com\"\r",
+							"var randomNum = Math.floor(Math.random() * 90000) + 10000;\r",
+							"var randomEmail = firstName.toLowerCase()+\".\"+lastName.toLowerCase()+randomNum+emailDomain;\r",
+							"pm.environment.set(\"email_update\", randomEmail);\r",
+							"\r",
+							" console.log(randomEmail)\r",
+							"\r",
+							"// Function to generate a random year between 1935 and 2013\r",
+							"function getRandomYear() {\r",
+							"    const minYear = 1935;\r",
+							"    const maxYear = 2013;\r",
+							"    return Math.floor(Math.random() * (maxYear - minYear + 1)) + minYear;\r",
+							"}\r",
+							"\r",
+							"// Function to generate a random month (1 to 12)\r",
+							"function getRandomMonth() {\r",
+							"    return Math.floor(Math.random() * 12) + 01;\r",
+							"}\r",
+							"// random day\r",
+							"const getRandomDay = Math.floor(Math.random() * 7);\r",
+							"\r",
+							"// Set the random year and month to Postman environment or global variables\r",
+							"pm.environment.set('randomYear', getRandomYear());\r",
+							"pm.environment.set('randomMonth', getRandomMonth());\r",
+							"pm.environment.set('randomDay', getRandomDay);\r",
+							"\r",
+							"// Generate a random number between 0 and 1\r",
+							"function getRandomInt(max) {\r",
+							"  return Math.floor(Math.random() * Math.floor(max));\r",
+							"}\r",
+							"\r",
+							"// Generate a random gender\r",
+							"const genders = ['male', 'female'];\r",
+							"const randomGender = genders[getRandomInt(2)];\r",
+							"\r",
+							"// Set the \"gender\" variable to the random gender\r",
+							"pm.environment.set('gender', randomGender);\r",
+							"\r",
+							"// Set the agreement variable to true\r",
+							"pm.environment.set(\"agreement\", true);\r",
+							"\r",
+							"// Log a message indicating that the agreement is set to true\r",
+							"console.log(\"Agreement set to true: \" + pm.environment.get(\"agreement\"));\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Success field is present in the response\", function () {\r",
+							"    pm.expect(pm.response.json().success).to.exist;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"The success field has a boolean value\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData.success).to.be.a('boolean');\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Message field is present in the response\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.message).to.exist;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Message field is a string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData.message).to.be.a('string');\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\" : \"{{fName_update}}\",\r\n    \"lastName\" : \"{{lName_update}}\",\r\n    \"email\"     : \"{{email_update}}\",\r\n    \"dob\"       : {\r\n        \"year\"      : {{randomYear}},\r\n        \"month\"     : {{randomMonth}},\r\n        \"day\"       : {{randomDay}}\r\n    },\r\n    \"gender\"    : \"{{gender}}\",\r\n    \"agree\"     : {{agreement}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/student/{{ID}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"student",
+						"{{ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login with new info",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response has the required fields\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"The success field is a boolean and is true\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData.success).to.be.a('boolean');\r",
+							"    pm.expect(responseData.success).to.be.true;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Token field is a non-empty string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData.token).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Token should not be empty\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvcWEudGFsdGVrdGMuY29tIiwiYXVkIjoiVEhFX0FVRElFTkNFIiwiaWF0IjoxNjkwMTM5MDcxLCJuYmYiOjE2OTAxMzkwODEsImV4cCI6MTY5MDIyNTQ3MSwiaXNfYWRtaW4iOmZhbHNlLCJkYXRhIjp7ImlkIjoiOTkiLCJmaXJzdF9uYW1lIjoiUmFzYWwiLCJsYXN0X25hbWUiOiJGYXJoYWQiLCJlbWFpbCI6InJhc2FsZmFyaGFkQGdtYWlsLmNvbSIsInN0dWRlbnRJZCI6IlRUQ3l0ZjI3In19.rlVyTvRRFbFvMiT4Yotw38paWNLwTTYSRS6KPckWRdY",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" :\"{{email_update}}\",\r\n    \"password\" : \"123456\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/login",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Change Password",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Success field is present in the response\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData.success).to.exist;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"The success field is a boolean\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData.success).to.be.a('boolean');\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Message field is present in the response\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.message).to.exist;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Message field is a string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData.message).to.be.a('string');\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"password\"  : \"Raju98\",\r\n    \"confirmPassword\"  : \"Raju98\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/updatePassword/{{ID}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"updatePassword",
+						"{{ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login with new email and password",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response has the required fields\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData).to.be.an(\"object\");\r",
+							"    pm.expect(responseData.success).to.exist;\r",
+							"    pm.expect(responseData[\"status code\"]).to.exist;\r",
+							"    pm.expect(responseData.message).to.exist;\r",
+							"    pm.expect(responseData.token).to.exist;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Success field is a boolean and its value is true\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData.success).to.be.a('boolean');\r",
+							"    pm.expect(responseData.success).to.be.true;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Token field is a non-empty string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData.token).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Token should not be empty\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\" : \"{{email_update}}\",\r\n    \"password\" : \"Raju98\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/login",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"The success field is true\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.success).to.be.true;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Verify that the student is deleted from the database\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.success).to.be.true;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Student details are no longer accessible\", function () {\r",
+							"    pm.sendRequest({\r",
+							"        url: pm.variables.get(\"baseURL\") + \"/student/\" + pm.variables.get(\"ID\"),\r",
+							"        method: 'GET',\r",
+							"        header: {\r",
+							"            'Content-Type': 'application/json'\r",
+							"        }\r",
+							"    }, function (err, response) {\r",
+							"        pm.expect(response).to.have.property('code', 404);\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/student/{{ID}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"student",
+						"{{ID}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
